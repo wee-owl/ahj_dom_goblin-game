@@ -4,15 +4,12 @@ export default class Game {
   constructor(element) {
     this.element = element;
     this.cells = [];
-    this.hit = 0;
-    this.miss = 0;
   }
 
   initGame() {
     this.renderTitle();
     this.renderArea(BOARD_SIZE);
-    this.renderBtn();
-    this.startGame();
+    this.renderGoblin();
   }
 
   renderTitle() {
@@ -42,21 +39,6 @@ export default class Game {
     this.element.append(btn);
   }
 
-  startGame() {
-    const btn = document.querySelector('.game__btn');
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (document.querySelector('.game__result')) {
-        document.querySelector('.game__result').remove();
-        this.container.style.pointerEvents = '';
-      }
-      this.hit = 0;
-      this.miss = 0;
-      this.renderGoblin();
-      this.renderClick();
-    });
-  }
-
   renderGoblin() {
     const arr = [...Array(BOARD_SIZE ** 2)].map((_, i = 0) => i + 1);
     let current = 0;
@@ -70,51 +52,5 @@ export default class Game {
       this.cells[random].classList.add('game__cell-active');
       current = random;
     }, 700);
-  }
-
-  renderClick() {
-    this.container.addEventListener('click', (e) => {
-      const cell = e.target.closest('.game__cell');
-      if (!cell) return;
-      if (cell.classList.contains('game__cell-active')) {
-        this.hit += 1;
-        cell.classList.add('game__cell-hit');
-        setTimeout(() => cell.classList.remove('game__cell-hit'), 400);
-      } else {
-        this.miss += 1;
-        cell.classList.add('game__cell-miss');
-        setTimeout(() => cell.classList.remove('game__cell-miss'), 400);
-      }
-      // eslint-disable-next-line no-console
-      console.log('Hit:', this.hit, 'Miss:', this.miss);
-      this.stopGame();
-    });
-  }
-
-  stopGame() {
-    if (this.hit === 10) this.renderResult('win');
-    if (this.miss === 10) this.renderResult('lose');
-  }
-
-  renderResult(text) {
-    const result = document.createElement('p');
-    result.classList.add('game__result');
-    let message;
-    if (text === 'win') {
-      message = `
-        You win!
-        Number of hits: ${this.hit}
-        Number of misses: ${this.miss}
-      `;
-    } else {
-      message = `
-        You lose!
-        Number of hits: ${this.hit}
-        Number of misses: ${this.miss}
-      `;
-    }
-    result.innerText = message;
-    this.element.append(result);
-    this.container.style.pointerEvents = 'none';
   }
 }
